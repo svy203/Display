@@ -3,10 +3,14 @@
 class count{
         private:
         static int M1,M2,VES,cal,cal2;
-        static float F1,F2,TEMP=10000,V,V2;
+        static float F1,F2,V,V2;
+        const float TEMP=10000;
         static char out[10],out2[10];
-        Vector <int> MS,MS2,MS3,MS_,MS2_;
+        Vector <int> MS,MS2,MS_,MS2_,MS3_;
         Vector <float> V_,V2_,V_l;
+        void test_(){
+            V= random(100,300)/100; 
+        }
         void sensor(){
              V = ina3221.getBusVoltage_V(CH_1);
              dtostrf(V,7, 3, out);
@@ -25,8 +29,8 @@ class count{
         dtostrf(V,7, 3, out);
         dtostrf(V2,7, 3, out2);
         }
-        void massa(){
-            for(int i=2;i<V_.size();i++){ 
+        void massa_c(){
+            for(unsigned int i=2;i<V_.size();i++){ 
                 int j,j2;
                 if (V<=V_[1]){j=1;j2=0;}
                 else if (V>V_[i-1]) {j=i;j2=i-1;}
@@ -39,7 +43,7 @@ class count{
             VES=M1+M2; 
         }
         void lazy(){
-             if (cal2==0) for(int i=2;i<V_l.size();i++){ 
+             if (cal2==0) for(unsigned int i=2;i<V_l.size();i++){ 
                 int j,j2;
                 if (V<=V_[1]){j=1;j2=0;}
                 else if (V>V_[i-1]) {j=i;j2=i-1;}
@@ -67,56 +71,60 @@ class count{
         } 
         template <typename ...T> 
         void abc(Vector <int> &m){} 
+
+        template <typename ...T> 
+        void vec(Vector <float> &m, float a, T... b){
+            m.push_back(a);
+            vec(m,b...);
+        } 
+        template <typename ...T> 
+        void vec(Vector <float> &m){} 
         
         public:
         void initalization(int i,int j){
             cal=i;
             cal2=j;
-        }// Number of calibrations       
+            if (cal!=0 && V_.size()!=cal) for (unsigned int i=0;i<V_.size()-cal;i++) {MS.pop_back();MS2.pop_back();V_.pop_back();}
+            if (cal2!=0 && V2_.size()!=cal2) for (unsigned int i=0;i<V2_.size()-cal2;i++) {MS3_.pop_back();MS_.pop_back();MS2_.pop_back();V2_.pop_back();V_l.pop_back();}
+        }//  Use if you have 1 sensor or more(Use when the data doesn't match      
                
         void Massa(int a,int b,int c,int d, int e,int f){
             abc(MS,a,b,c,d,e,f);
         }  // For trucks with 1 sensor or more 
-  
             
-         
         void Massa2(int a,int b,int c,int d, int e,int f){
-            MS2.push_back(a);MS2.push_back(b);MS2.push_back(c);
-            MS2.push_back(d);MS2.push_back(e);MS2.push_back(f);
+            abc(MS2,a,b,c,d,e,f);
         } // For trucks with 1 sensor or more 
         
-        void Massa3(int a,int b,int c,int d, int e,int f){
-            MS3.push_back(a);MS3.push_back(b);MS3.push_back(c);
-            MS3.push_back(d);MS3.push_back(e);MS3.push_back(f);
-        }// For trucks with 2 sensors(Lazy)
         void Massa_lazy(int a,int b,int c,int d, int e,int f){
-            MS_.push_back(a);MS_.push_back(b);MS_.push_back(c);
-            MS_.push_back(d);MS_.push_back(e);MS_.push_back(f);
+            abc(MS_,a,b,c,d,e,f);
+        }// For trucks with 2 sensors(Lazy)
+        void Massa_lazy2(int a,int b,int c,int d, int e,int f){
+            abc(MS2_,a,b,c,d,e,f);
         }//For trucks with Lazy-system 
-        void Massa2_lazy(int a,int b,int c,int d, int e,int f){
-            MS2_.push_back(a);MS2_.push_back(b);MS2_.push_back(c);
-            MS2_.push_back(d);MS2_.push_back(e);MS2_.push_back(f);
+        void Massa_lazy3(int a,int b,int c,int d, int e,int f){
+            abc(MS3_,a,b,c,d,e,f);
         }//For trucks with Lazy-system
 
         // Functions for calibration data(The Weight of the truck)
   
         void Voltage(float a, float b, float c,float d,float e, float f){
-            V_.push_back(a);V_.push_back(b);V_.push_back(c);
-            V_.push_back(d);V_.push_back(e);V_.push_back(f);
+            vec(V_,a,b,c,d,e,f);
         } // For trucks with 1 sensor or more 
         void Voltage2(float a, float b, float c,float d,float e, float f){
-            V2_.push_back(a);V2_.push_back(b);V2_.push_back(c);
-            V2_.push_back(d);V2_.push_back(e);V2_.push_back(f);
+             vec(V2_,a,b,c,d,e,f);
         } // For trucks with 2 sensors only 
         void Voltage_lazy(float a, float b, float c,float d,float e, float f){
-            V_l.push_back(a);V_l.push_back(b);V_l.push_back(c);
-            V_l.push_back(d);V_l.push_back(e);V_l.push_back(f);
+            vec(V_l,a,b,c,d,e,f);
         } // For trucks with 2 sensors only 
         //Functions for calibration data(The voltage of the sensors)
-        
-        void flush(){
-            if (cal!=0 && V_.size()!=cal) for (int i=0;i<V_.size()-cal;i++) {MS.pop_back();MS2.pop_back();V_.pop_back();}
-            if (cal2!=0 && V2_.size()!=cal2) for (int i=0;i<V2_.size()-cal2;i++) {MS3.pop_back();MS_.pop_back();MS2_.pop_back();V2_.pop_back();V_l.pop_back();}
+        void test(){
+        test_();
+        massa_c();
+        Serial.print("M1= ");Serial.println(M1); Serial.print("M2= ");Serial.println(M2);
+        Serial.print("INPUT V1= ");Serial.println(V);
+        Serial.print("INPUT V2= ");Serial.println(V2);
 
-        } // Use if you have 1 sensor or more(Use when the data doesn't match)  
+        }
+        
 };
