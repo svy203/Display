@@ -2,10 +2,10 @@
 
 class count{
         private:
-        static int M1,M2,VES,cal,cal2;
-        static float F1,F2,V,V2;
+        unsigned int M1,M2,VES,cal,cal2;
+        float F1,F2,V,V2;
         const float TEMP=10000;
-        static char out[10],out2[10];
+        char out[10],out2[10];
         Vector <int> MS,MS2,MS_,MS2_,MS3_;
         Vector <float> V_,V2_,V_l;
         void test_(){
@@ -15,6 +15,10 @@ class count{
              V = ina3221.getBusVoltage_V(CH_1);
              dtostrf(V,7, 3, out);
         }
+        void myDelayMicroseconds(uint32_t us) {
+  uint32_t tmr = micros();
+  while (micros() - tmr < us);
+}
         void _sw(uint8_t i){
          if (i > 7) return;
          Wire.beginTransmission(TCAADDR);
@@ -30,7 +34,7 @@ class count{
         dtostrf(V2,7, 3, out2);
         }
         void massa_c(){
-            for(unsigned int i=2;i<V_.size();i++){ 
+            for(unsigned int i=1;i<V_.size();i++){ 
                 int j,j2;
                 if (V<=V_[1]){j=1;j2=0;}
                 else if (V>V_[i-1]) {j=i;j2=i-1;}
